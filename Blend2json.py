@@ -102,6 +102,8 @@ class BJ_OT_KeyframesjasonOperator(bpy.types.Operator):
         f.write(jsonlist)
         f.close()
 
+        #######
+
         return {'FINISHED'}
 
 
