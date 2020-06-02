@@ -1,37 +1,47 @@
+#!/usr/bin/env python3
+
 from browsergui import GUI, Text, Button, List, Grid
-import time
-import threading
+from packages.rasps import Rasberries, Raspberry
+from packages.songs import Songs, Song
 
-texta = Text("BamBAm")
-textb = Text("dig")
-# GUI(Text("Hello world!"), texta).run()
+''''
+RBs = Rasberries()
+Songs = Songs()
 
-list = List(items=[texta, textb])
-
-
-button = Button('0')
-
-
-@button.def_callback
-def increment():
-    button.text = str(int(button.text)+1)
+RB = Raspberry(RBs)
+RB = Raspberry(RBs)
+RB = Raspberry(RBs)
 
 
-now = Text("")
+for ele in RBs.Rasplist:
+    print(f"In RBs {ele.name}, ele.IP {ele.IP}")
+
+'''
+Songs.read_json()
+
+Son = Song(name="Resistance", parent=RBs)
+Song = Song(name="Marscha", parent=RBs)
+'''
+print(f"{RB.name}, {RB.IP}, {RB.description}")
 
 
-def update_now_forever():
-    while True:
-        now.text = time.strftime("%Y-%m-%d %H:%M:%S")
-        time.sleep(1)
+'''for ele in Songs.Songlist:
+    print(f"In Songs {ele.name}")'''
 
+'''
+while len(Songs.Songlist) > 1:
+    for sng in Songs.Songlist:
+        print(f"remove {sng.name}")
+        sng.remove()'''
 
-t = threading.Thread(target=update_now_forever)
-t.daemon = True
-t.start()
+'''for ele in Songs.Songlist:
+    print(f"In Songs after {ele.name}")'''
 
+Songs.write_json()
 
-# GUI(button, texta, Text("\n The time is: ",), now, list, title='Marshall AR.TS Live Suit').run()
+RBs.write_json()
+''''
+
 
 class Lyout1(GUI):
     def __init__(self, **kwargs):
@@ -72,6 +82,11 @@ class Lyout1(GUI):
 
 
 def main():
+    RBs = Rasberries()
+    RBs.read_json()
+    Songs = Songs()
+    Songs.read_json()
+
     Lyout1().run()
 
 
