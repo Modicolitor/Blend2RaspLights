@@ -54,3 +54,9 @@ class Song(Songs):
 
     def remove(self):
         self.parent.Songlist.remove(self)
+
+    def play(self):
+        print("bambam lights on")
+
+    def edit(self):
+        print("editieren")

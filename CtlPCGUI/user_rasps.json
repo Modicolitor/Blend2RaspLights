@@ -1,1 +1,1 @@
-{"rasp": [{"name": "Rasp", "IP": "10.1.0.20", "description": ""}, {"name": "Rasp", "IP": "10.1.0.20", "description": ""}, {"name": "Rasp", "IP": "10.1.0.20", "description": ""}]}
+{"rasps": [{"name": "Rasp", "IP": "10.1.0.20", "description": ""}, {"name": "Rasp", "IP": "10.1.0.20", "description": ""}]}

@@ -4,66 +4,50 @@ from browsergui import GUI, Text, Button, List, Grid
 from packages.rasps import Rasberries, Raspberry
 from packages.songs import Songs, Song
 
-''''
 RBs = Rasberries()
+RBs.read_json()
+
+raspa = Raspberry(RBs)
+raspb = Raspberry(RBs)
+
+
 Songs = Songs()
-
-RB = Raspberry(RBs)
-RB = Raspberry(RBs)
-RB = Raspberry(RBs)
-
-
-for ele in RBs.Rasplist:
-    print(f"In RBs {ele.name}, ele.IP {ele.IP}")
-
-'''
 Songs.read_json()
 
-Son = Song(name="Resistance", parent=RBs)
-Song = Song(name="Marscha", parent=RBs)
-'''
-print(f"{RB.name}, {RB.IP}, {RB.description}")
 
+#Sng = Song(name="Resistance", parent=Songs)
+#Sng = Song(name="HellMount", parent=Songs)
 
-'''for ele in Songs.Songlist:
-    print(f"In Songs {ele.name}")'''
-
-'''
-while len(Songs.Songlist) > 1:
-    for sng in Songs.Songlist:
-        print(f"remove {sng.name}")
-        sng.remove()'''
-
-'''for ele in Songs.Songlist:
-    print(f"In Songs after {ele.name}")'''
-
-Songs.write_json()
-
-RBs.write_json()
-''''
+# Songs.write_json()
+# RBs.write_json()
 
 
 class Lyout1(GUI):
     def __init__(self, **kwargs):
         super(Lyout1, self).__init__(**kwargs)
 
-        self.songlist = ["Arcade Riot", "Resistance",
-                         "MadMenSin", "RussianStandard"]
+        self.songlist = Songs.Songlist
 
         title = Text("Marshall AR.TS Live Suit")
         self.body.append(title)
-        self.guilist()
+        self.guisonglist()
 
-    def guilist(self):
-        if len(self.body) > 1:
-            self.body.remove(self.songgrid)
-        self.songgrid = Grid(n_rows=len(self.songlist), n_columns=2)
-        for num, song in enumerate(self.songlist):
-            b = Button(text=song, callback=self.testcallback)
-            t = Text(song)
-            self.songgrid[num, 0] = t
-            self.songgrid[num, 1] = b
-       # self.body.append(self.songgrid)
+    def guisonglist(self):
+        # if len(self.body) > 1:
+        #    self.body.remove(self.songgrid)
+        self.songgrid = Grid(n_rows=len(self.songlist), n_columns=4)
+        print(Songs,)
+        for num, song in enumerate(Songs.Songlist):
+            print(f"song {song} song.name {song.name} num {num}")
+            n = Text(str(num))
+            edit = Button(text="edit", callback=song.edit)
+            play = Button(text="play", callback=song.play)
+            t = Text(song.name)
+            self.songgrid[num, 0] = n
+            self.songgrid[num, 1] = t
+            self.songgrid[num, 2] = edit
+            self.songgrid[num, 3] = play
+        self.body.append(self.songgrid)
         self.reset()
 
     def testcallback(self):
@@ -71,7 +55,7 @@ class Lyout1(GUI):
         print("append mehr")
         for s in self.songlist:
             print(s)
-        self.guilist()
+        self.guisonglist()
         self.reset()
 
     def reset(self):
@@ -82,10 +66,6 @@ class Lyout1(GUI):
 
 
 def main():
-    RBs = Rasberries()
-    RBs.read_json()
-    Songs = Songs()
-    Songs.read_json()
 
     Lyout1().run()
 

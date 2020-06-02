@@ -13,9 +13,9 @@ class Rasberries():
 
     def write_json(self):
         data = {}
-        data['rasp'] = []
+        data['rasps'] = []
         for d in self.Rasplist:
-            data['rasp'].append({
+            data['rasps'].append({
                 'name': d.name,
                 'IP': d.IP,
                 'description': d.description
@@ -25,13 +25,14 @@ class Rasberries():
             json.dump(data, outfile)
 
     def read_json(self):
+
         my_file = Path("user_rasps.json")
         if my_file.is_file():
             with open('user_rasps.json') as json_file:
                 data = json.load(json_file)
                 for p in data['rasps']:
                     # print(f"generating {p.name}")
-                    rsp = Raspberry(name=p['name'], parent=self)
+                    rsp = Raspberry(parent=self)
                     rsp.IP = p['IP']
                     rsp.decription = p['description']
 
@@ -47,3 +48,12 @@ class Raspberry(Rasberries):
 
     def ping(self):
         print("ping")
+
+    def play(self):
+        print("bambam lights on")
+
+    def edit(self):
+        print("editieren")
+
+    def test(self):
+        print("editieren")
