@@ -39,9 +39,14 @@ class Lyout1(GUI):
 
         self.songlist = ["Arcade Riot", "Resistance",
                          "MadMenSin", "RussianStandard"]
+
+        title = Text("Marshall AR.TS Live Suit")
+        self.body.append(title)
         self.guilist()
 
     def guilist(self):
+        if len(self.body) > 1:
+            self.body.remove(self.songgrid)
         self.songgrid = Grid(n_rows=len(self.songlist), n_columns=2)
         for num, song in enumerate(self.songlist):
             b = Button(text=song, callback=self.testcallback)
@@ -56,9 +61,12 @@ class Lyout1(GUI):
         print("append mehr")
         for s in self.songlist:
             print(s)
+        self.guilist()
         self.reset()
 
     def reset(self):
+        # if self.songgrid in self.body:
+
         print("In Reset")
         self.body.append(self.songgrid)
 
