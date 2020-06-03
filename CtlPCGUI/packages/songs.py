@@ -2,6 +2,7 @@ import json
 import time
 import threading
 from pathlib import Path
+#from gui import Lyout1
 
 
 class Songs():
@@ -60,3 +61,4 @@ class Song(Songs):
 
     def edit(self):
         print("editieren")
+        return self
