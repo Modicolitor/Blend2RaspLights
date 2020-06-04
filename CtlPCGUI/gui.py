@@ -50,7 +50,7 @@ class Lyout1(GUI):
             print(f"song {song} song.name {song.name} num {num}")
 
             n = Text(str(num))
-            edit = sngEditBtn(song)
+            edit = self.sngEditBtn(song)
             play = Button(text="play")
             t = Text(song.name)
             self.songgrid[num, 0] = n
@@ -64,11 +64,11 @@ class Lyout1(GUI):
         # prinbody(self.body)
         self.cleanUI()
         self.updatesonggrid()
-    
+
     def sngEditBtn(self, song):
-        def callback(): 
+        def callback():
             self.EditSong(song)
-        return Button(text="edit" callback =callback)
+        return Button(text="edit", callback=callback)
 
     def newsong(self):
 
