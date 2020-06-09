@@ -51,7 +51,7 @@ class Lyout1(GUI):
 
             n = Text(str(num))
             edit = self.sngEditBtn(song)
-            play = Button(text="play")
+            play = self.sngPlayBtn(song)
             t = Text(song.name)
             self.songgrid[num, 0] = n
             self.songgrid[num, 1] = t
@@ -69,6 +69,11 @@ class Lyout1(GUI):
         def callback():
             self.EditSong(song)
         return Button(text="edit", callback=callback)
+
+    def sngPlayBtn(self, song):
+        def callback():
+            song.play()
+        return Button(text="Play", callback=callback)
 
     def newsong(self):
 
