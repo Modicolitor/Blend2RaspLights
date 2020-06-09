@@ -72,7 +72,8 @@ class Lyout1(GUI):
 
     def sngPlayBtn(self, song):
         def callback():
-            song.play()
+            song.playRasps()
+            song.playVideo()
         return Button(text="Play", callback=callback)
 
     def newsong(self):

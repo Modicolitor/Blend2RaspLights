@@ -56,7 +56,7 @@ class Song(Songs):
     def remove(self):
         self.parent.Songlist.remove(self)
 
-    def play(self):
+    def playRasps(self):
         import paramiko
 
         ssh = paramiko.SSHClient()
@@ -77,6 +77,23 @@ class Song(Songs):
 
         ssh.close()
         print("bambam lights on")
+
+    def playVideo(self):
+        '''import cv2  # opencv
+
+        cap = cv2.VideoCapture("testmovie.mp4")
+        ret, frame = cap.read()
+        while(1):
+            ret, frame = cap.read()
+            cv2.imshow('frame', frame)
+            if cv2.waitKey(1) & 0xFF == ord('q') or ret == False:
+                cap.release()
+                cv2.destroyAllWindows()
+                break
+            cv2.imshow('frame', frame)'''
+        import vlc
+        player = vlc.MediaPlayer("testmovie.mp4")
+        player.play()
 
     def edit(self):
         print("editieren")
