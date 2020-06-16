@@ -79,7 +79,7 @@ class Song(Songs):
         print("bambam lights on")
 
     def playVideo(self):
-        '''import cv2  # opencv
+        import cv2  # opencv
 
         cap = cv2.VideoCapture("testmovie.mp4")
         ret, frame = cap.read()
@@ -90,10 +90,10 @@ class Song(Songs):
                 cap.release()
                 cv2.destroyAllWindows()
                 break
-            cv2.imshow('frame', frame)'''
-        import vlc
-        player = vlc.MediaPlayer("testmovie.mp4")
-        player.play()
+            cv2.imshow('frame', frame)
+        #import vlc
+        #player = vlc.MediaPlayer("testmovie.mp4")
+        # player.play()
 
     def edit(self):
         print("editieren")
