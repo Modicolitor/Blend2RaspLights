@@ -18,6 +18,7 @@ class Rasberries():
             data['rasps'].append({
                 'name': d.name,
                 'IP': d.IP,
+                'Songs': self.songs,
                 'description': d.description
             })
 
@@ -34,15 +35,17 @@ class Rasberries():
                     # print(f"generating {p.name}")
                     rsp = Raspberry(parent=self)
                     rsp.IP = p['IP']
+                    rsp.songs = p['Songs']
                     rsp.decription = p['description']
 
 
 class Raspberry(Rasberries):
     def __init__(self, parent):
-        self.name = "Rasp"  # + str(len(RBs.Rasplist))
+        self.name = "Rasp"  # + str(len(.Rasplist))
         self.IP = "10.1.0.20"
         self.description = ""
         self.parent = parent
+        self.songs = {}
 
         parent.add(self)
 
@@ -57,3 +60,9 @@ class Raspberry(Rasberries):
 
     def test(self):
         print("editieren")
+
+    def addSong(self, song, filename):
+        self.songs[song.name] = filename
+
+    def removeSong(self, song):
+        self.songs.pop(song.name)

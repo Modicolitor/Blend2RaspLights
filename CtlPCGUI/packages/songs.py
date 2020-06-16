@@ -15,6 +15,7 @@ class Songs():
     def write_json(self):
         data = {}
         data['songs'] = []
+
         for d in self.Songlist:
 
             data['songs'].append({
@@ -41,7 +42,7 @@ class Songs():
 class Song(Songs):
     def __init__(self, name, parent):
         self.name = name
-        self.used_pis = []
+        self.used_pis = {"NORASPSET": ""}  # raspname, filename
         self.description = ""
         self.parent = parent
 
@@ -50,11 +51,17 @@ class Song(Songs):
     def ping(self):
         print("ping")
 
-    def append_pi(self, song):
-        self.used_pis.append(song)
+    # def append_pi(self, song):
+    #    self.used_pis.append(song)
 
     def remove(self):
         self.parent.Songlist.remove(self)
+
+    def addRasp(self, Rasp, filename):
+        self.used_pis[Rasp.name] = filename
+
+    def removeRasp(self, Rasp):
+        self.used_pis.pop(Rasp.name)
 
     def playRasps(self):
         import paramiko
