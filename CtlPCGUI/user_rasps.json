@@ -1,1 +1,1 @@
-{"rasps": [{"name": "Rasp", "IP": "10.1.0.20", "Songs": {}, "description": ""}, {"name": "Rasp", "IP": "10.1.0.20", "Songs": {}, "description": ""}, {"name": "Rasp", "IP": "10.1.0.20", "Songs": {}, "description": ""}, {"name": "Rasp", "IP": "10.1.0.20", "Songs": {}, "description": ""}]}
+{"rasps": [{"name": "Rasp1", "IP": "10.1.0.5", "Songs": {"HellMount": "HellBlinkt", "Resistancen": "CrossTs"}, "description": ""}, {"name": "Rasp", "IP": "10.1.0.20", "Songs": {}, "description": ""}, {"name": "Rasp5", "IP": "10.1.0.10", "Songs": {}, "description": ""}]}

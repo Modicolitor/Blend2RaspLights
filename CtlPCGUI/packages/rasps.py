@@ -34,6 +34,7 @@ class Rasberries():
                 for p in data['rasps']:
                     # print(f"generating {p.name}")
                     rsp = Raspberry(parent=self)
+                    rsp.name = p['name']
                     rsp.IP = p['IP']
                     rsp.songs = p['Songs']
                     rsp.decription = p['description']
@@ -51,6 +52,7 @@ class Raspberry(Rasberries):
 
     def removeRasp(self, Rasp):
         self.parent.Rasplist.remove(self)
+        self.parent.write_json()
 
     def play(self):
         print("bambam lights on")
@@ -61,8 +63,10 @@ class Raspberry(Rasberries):
     def test(self):
         print("editieren")
 
-    def addSong(self, song, filename):
-        self.songs[song.name] = filename
+    def addSong(self, songname, filename):
+        self.songs[songname] = filename
+        self.parent.write_json()
 
     def removeSong(self, song):
         self.songs.pop(song.name)
+        self.parent.write_json()
