@@ -34,15 +34,15 @@ class Songs():
                 data = json.load(json_file)
                 for p in data['songs']:
                     # print(f"generating {p.name}")
-                    sng = Song(name=p['name'], parent=self)
+                    sng = Song(name=p['name'], parent=self, pis={})
                     sng.used_pis = p['used_pis']
                     sng.decription = p['description']
 
 
 class Song(Songs):
-    def __init__(self, name, parent):
+    def __init__(self, name, parent, pis):
         self.name = name
-        self.used_pis = {"NORASPSET": ""}  # raspname, filename
+        self.used_pis = pis  # raspname, filename
         self.description = ""
         self.parent = parent
 
@@ -56,12 +56,15 @@ class Song(Songs):
 
     def remove(self):
         self.parent.Songlist.remove(self)
+        self.parent.write_json()
 
     def addRasp(self, Rasp, filename):
         self.used_pis[Rasp] = filename
+        self.parent.write_json()
 
     def removeRasp(self, Rasp):
         self.used_pis.pop(Rasp)
+        self.parent.write_json()
 
     def playRasps(self):
         import paramiko

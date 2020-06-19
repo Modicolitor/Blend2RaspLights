@@ -49,8 +49,8 @@ class Raspberry(Rasberries):
 
         parent.add(self)
 
-    def ping(self):
-        print("ping")
+    def removeRasp(self, Rasp):
+        self.parent.Rasplist.remove(self)
 
     def play(self):
         print("bambam lights on")
