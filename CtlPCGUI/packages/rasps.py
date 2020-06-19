@@ -18,7 +18,7 @@ class Rasberries():
             data['rasps'].append({
                 'name': d.name,
                 'IP': d.IP,
-                'Songs': self.songs,
+                'Songs': d.songs,
                 'description': d.description
             })
 

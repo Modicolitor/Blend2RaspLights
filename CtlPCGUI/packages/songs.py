@@ -58,10 +58,10 @@ class Song(Songs):
         self.parent.Songlist.remove(self)
 
     def addRasp(self, Rasp, filename):
-        self.used_pis[Rasp.name] = filename
+        self.used_pis[Rasp] = filename
 
     def removeRasp(self, Rasp):
-        self.used_pis.pop(Rasp.name)
+        self.used_pis.pop(Rasp)
 
     def playRasps(self):
         import paramiko
