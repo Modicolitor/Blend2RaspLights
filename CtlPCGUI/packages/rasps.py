@@ -68,5 +68,5 @@ class Raspberry(Rasberries):
         self.parent.write_json()
 
     def removeSong(self, song):
-        self.songs.pop(song.name)
+        self.songs.pop(song)
         self.parent.write_json()
