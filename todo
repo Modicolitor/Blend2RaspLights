@@ -1,0 +1,10 @@
+
+[] song should send Rasps(ips) and file name to central ssh connector 
+[] json file central database 
+    [] json file name pro song and raps, each rasp shoudld have a table with all connected songs and the filename  (filename of json on  connection)
+    [] dropdown of avaiable json files
+
+[] connection tester for rasps 
+[] fileupdater sending jsons file to rasps
+[] json2blinkt all pixel version 
+    [] blend2 json update for 8 pixels

@@ -68,44 +68,72 @@ class Song(Songs):
 
     def playRasps(self):
         import paramiko
+        import threading
+        import time
+
+        standarddelay = 5  # seconds
+
+        currentimestr = time.ctime()
+        print(currentimestr)
+        seconds = int(currentimestr[17]+currentimestr[18])
+        futuresec = (seconds + standarddelay) if (seconds +
+                                                  standarddelay) < 60 else (seconds + standarddelay) - 60
+        futuresec = "0" + str(futuresec) if len(str(futuresec)
+                                                ) == 1 else str(futuresec)
+        starttime = currentimestr[:17] + \
+            str(futuresec) + currentimestr[19:]
+
+        print(starttime)
 
         sshs = []
-        ips = ["10.0.1.20", "10.0.1.20"]
+        ips = ["10.0.1.24", "10.0.1.25"]
         for ip in ips:
             ssh = paramiko.SSHClient()
             ssh.set_missing_host_key_policy(
                 paramiko.AutoAddPolicy())
 
-            # ssh.load_host_keys()
-
-            # print(key)
-
             ssh.connect(ip,  username="pi",
-                        password="B!um3nBo+")  # password error
+                        password="B!um3nBo+")
             sshs.append(ssh)
-        # ssh.start_client()
+        comand = "python json2blinkt-time.py" + ' "' + starttime + '"'
+        print(comand)
 
-        # ssh_stdin, ssh_stouz, ssh_stderr = ssh.exec_command('cd /BLEND2BLINK/')
-        # "ls -l")  # cd /BLEND2BLINK/")
-        for ssh in sshs:
-            ssh_stdin, ssh_stouz, ssh_stderr = ssh.exec_command(
-                'python json2blinkt-time.py')
+        def exe(ssh, comand):
+            # comand
+            ssh_stdin, ssh_stouz, ssh_stderr = ssh.exec_command(comand)
+            #"python json2blinkt-time.py"
+
             print("bambam lights on")
             ssh.close()
+
+        threads = set()
+        for ssh in sshs:
+            threads.add(threading.Thread(target=exe, args=[ssh, comand]))
+
+        for thread in threads:
+            thread.start()
+        for thread in threads:
+            thread.join()
+
+        # for ssh in sshs:
+        #    ssh_stdin, ssh_stouz, ssh_stderr = ssh.exec_command(
+        #        'python json2blinkt-time.py')
+        #    print("bambam lights on")
+        #    ssh.close()
 
     def playVideo(self):
         import cv2  # opencv
 
-        cap = cv2.VideoCapture("testmovie.mp4")
-        ret, frame = cap.read()
-        while(1):
-            ret, frame = cap.read()
-            cv2.imshow('frame', frame)
-            if cv2.waitKey(1) & 0xFF == ord('q') or ret == False:
-                cap.release()
-                cv2.destroyAllWindows()
-                break
-            cv2.imshow('frame', frame)
+        #cap = cv2.VideoCapture("testmovie.mp4")
+        #ret, frame = cap.read()
+        # while(1):
+        #    ret, frame = cap.read()
+        #    cv2.imshow('frame', frame)
+        #    if cv2.waitKey(1) & 0xFF == ord('q') or ret == False:
+        #        cap.release()
+        #        cv2.destroyAllWindows()
+        #        break
+        #    cv2.imshow('frame', frame)
         #import vlc
         #player = vlc.MediaPlayer("testmovie.mp4")
         # player.play()
