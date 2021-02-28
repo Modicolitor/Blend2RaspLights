@@ -84,9 +84,9 @@ class Song(Songs):
             str(futuresec) + currentimestr[19:]
 
         print(starttime)
-
+        filename = "Blend2BlinkTest.json"
         sshs = []
-        ips = ["10.0.1.24", "10.0.1.25"]
+        ips = ["10.0.1.24"]  # , "10.0.1.25"
         for ip in ips:
             ssh = paramiko.SSHClient()
             ssh.set_missing_host_key_policy(
@@ -95,7 +95,8 @@ class Song(Songs):
             ssh.connect(ip,  username="pi",
                         password="B!um3nBo+")
             sshs.append(ssh)
-        comand = "python json2blinkt-time.py" + ' "' + starttime + '"'
+        comand = "python json2blinkt-time_MultiColor.py" + ' "' + \
+            starttime + '"' + ' "' + filename + '"'
         print(comand)
 
         def exe(ssh, comand):

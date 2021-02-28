@@ -99,10 +99,12 @@ class Lyout1(GUI):
     def sng_raspUpdateBtn(self, rasps, rasp, song):
         def callback():
             rasps[rasp] = self.rfilenameTfield.value
-            self.EditSong(song)
+
             for ras in RBs.Rasplist:
                 if ras.name == rasp:
                     ras.songs[song.name] = self.rfilenameTfield.value
+
+            # self.EditSong(song)
 
         return Button(text="Update", callback=callback)
 
@@ -168,7 +170,7 @@ class Lyout1(GUI):
         self.soedgrid[2, 2] = self.ns3
         trenner = Text(
             "---------------------------------------------------------------------")
-        # Rasplist
+        # Rasplist of this song with filename
         self.rasedgrid = Grid(n_rows=len(song.used_pis), n_columns=5)
         for num, rasp in enumerate(song.used_pis):
             # print(str(num) + rasp)
@@ -234,13 +236,14 @@ class Lyout1(GUI):
             Rasplist = RBs.Rasplist.copy()
             for rasp in Rasplist:
                 songs = rasp.songs.copy()
+                print(f"rasp.songs {songs} for rasp {rasp.name}")
                 for sng in songs:
                     print(
                         f"song found in rrasps songs: {sng} song.name {song.name}")
                     if sng == song.name:
                         # remove song from list
                         rasp.addSong(self.ns1.value, rasp.songs[song.name])
-                        rasp.songs.pop(song.name)
+                        # rasp.songs.pop(song.name)
 
                         # add new instance with new name
 
@@ -330,15 +333,19 @@ class Lyout1(GUI):
             self.raspSonglistgrid[num, 4] = deleteBtn
 
         # song dropdown
-        newText = Text("New Rasp")
+        newText = Text("New Song")
         RaspNamelist = []
+        print(f"rasp songs {Songs.Songlist}")
+        print(f"rasp songs {rasp.songs}")
         for son in Songs.Songlist:
             if son.name not in rasp.songs:
                 RaspNamelist.append(son.name)
         RaspNamelist.append("  ")
         self.rsongdrop = Dropdown(RaspNamelist)
         self.newrasfilename = TextField(value="Unknown File")
-        self.raddButton = self.appendsongtoraspbtn(rasp)
+
+        self.raddButton = self.appendsongtoraspbtn(
+            rasp)
 
         self.NewRSongCont = Container(
             newText, self.rsongdrop, self.newrasfilename, self.raddButton)
@@ -391,7 +398,9 @@ class Lyout1(GUI):
 
     def appendsongtoraspbtn(self, rasp):
         def callback():
-            rasp.addSong(self.rsongdrop.value, self.newrasfilename.value)
+            songstr = self.rsongdrop.value
+            filename = self.newrasfilename.value
+            rasp.addSong(songstr, filename)
             self.saveEditdata(rasp)
 
             for song in Songs.Songlist:

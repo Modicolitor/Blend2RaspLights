@@ -1,1 +1,1 @@
-{"rasps": [{"name": "Marshall", "IP": "10.1.0.5", "Songs": {}, "description": ""}, {"name": "Arndt", "IP": "10.1.0.20", "Songs": {"Redmption": "Unknown File"}, "description": ""}, {"name": "Shorty", "IP": "10.1.0.10", "Songs": {}, "description": ""}]}
+{"rasps": [{"name": "Marshall", "IP": "10.1.0.5", "Songs": {"Redemption": "rrrr"}, "description": ""}, {"name": "Shorty", "IP": "10.1.0.20", "Songs": {"Redemption": "rrrr"}, "description": ""}]}
