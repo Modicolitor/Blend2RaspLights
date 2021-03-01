@@ -73,14 +73,70 @@ class BJ_OT_BlinktElementsGenOperator(bpy.types.Operator):
         return {'FINISHED'}
 
 
-class BJ_OT_KeyframesjasonOperator(bpy.types.Operator):
-    bl_idname = "object.bj_ot_keyframesjason"
-    bl_label = "BJ_OT_Keyframesjason"
+# filename for the uia
+bpy.types.Scene.BlinktFilename = bpy.props.StringProperty(
+    name="Filename",
+    description="Filename of next Jso",
+    default=".json"
+)
 
-    def execute(self, context):
-        data = bpy.data
-        action = bpy.data.actions["Shader NodetreeAction"]
-        keyframelist = []
+
+def clampvalue(value):
+    if value > 1:
+        value = 1
+    elif value < 0:
+        value = 0
+
+    return value
+
+
+def get_matinfo(context):
+    depsgraph = context.evaluated_depsgraph_get()
+    obeval = context.object.evaluated_get(depsgraph)
+    emnode = obeval.material_slots[0].material.node_tree.nodes['Emission']
+
+    r = clampvalue(emnode.inputs[0].default_value[0]) * 255
+    g = clampvalue(emnode.inputs[0].default_value[1]) * 255
+    b = clampvalue(emnode.inputs[0].default_value[2]) * 255
+
+    strength = clampvalue(emnode.inputs[1].default_value)
+
+    return strength, r, g, b
+
+
+def readoutframedata(context):
+
+    #oricurrentframe = context.scene.frame_current
+
+    frame_start = context.scene.frame_start
+    frame_end = context.scene.frame_end
+
+    # set current frame
+    context.scene.frame_current = frame_start
+
+    # selected handling
+
+    # go through the range and collect the data
+    framelist = []
+    while context.scene.frame_current <= frame_end:
+
+        strength, r, g, b = get_matinfo(context)
+        print()
+        #action = bpy.data.actions["Shader NodetreeAction"]
+        ele = {
+            "x": context.scene.frame_current,
+            "y": strength,
+            "r": r,
+            "g": g,
+            "b": b,
+
+
+        }
+        framelist.append(ele)
+
+        context.scene.frame_current += 1
+
+        '''
         for fcu in action.fcurves:
             #print(fcu.data_path + " channel " + str(fcu.array_index))
             for keyframe in fcu.keyframe_points:
@@ -94,16 +150,26 @@ class BJ_OT_KeyframesjasonOperator(bpy.types.Operator):
 
                 }
                 keyframelist.append(ele)
-
-        jsonlist = json.dumps(keyframelist)
+        '''
+        jsonlist = json.dumps(framelist)
         print(jsonlist)
 
-        f = open("Blend2BlinkTest.json", "w")
+        # path to blendfile + user filename
+        filepath = bpy.path.abspath("//") + context.scene.BlinktFilename
+        f = open(filepath, "w")
         f.write(jsonlist)
         f.close()
 
-        #######
 
+class BJ_OT_KeyframesjasonOperator(bpy.types.Operator):
+    bl_idname = "object.bj_ot_keyframesjason"
+    bl_label = "BJ_OT_Keyframesjason"
+
+    def execute(self, context):
+        data = bpy.data
+
+        #######
+        readoutframedata(context)
         return {'FINISHED'}
 
 
@@ -138,6 +204,8 @@ class BJ_PT_Blend2BlinkUI(bpy.types.Panel):
 
         subcol.operator("object.blinktelementsgen",
                         text="Make Blinkt! Pixels", icon="PLUS")  # zeige button an
+
+        subcol.prop(context.scene, "BlinktFilename", text="")
         subcol.operator("object.bj_ot_keyframesjason",
                         text="KeyframeToJson", icon="PLUS")
         # subcol.label(text="Adjust")
@@ -145,3 +213,10 @@ class BJ_PT_Blend2BlinkUI(bpy.types.Panel):
         # subcol.operator("object.activecoupdefault", text ='Active to Settings', icon ="EXPORT") ### ze
 
         # return {'FINISHED'}
+
+
+classes = (BJ_OT_BlinktElementsGenOperator,
+           BJ_OT_KeyframesjasonOperator,
+           BJ_PT_Blend2BlinkUI)
+
+register, unregister = bpy.utils.register_classes_factory(classes)

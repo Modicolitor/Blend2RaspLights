@@ -16,8 +16,7 @@ def make_light(start_time, filename):  # getting time.ctime()
         data = json.load(json_file)
         for frame in data:
             # json structure: list of dict(keyframeX,KeyframeY,r,g,b)
-            val = [frame["r"] * 255, frame["g"] *
-                   255, frame["b"] * 255, frame["y"]]
+            val = [frame["r"], frame["g"], frame["b"], frame["y"]]
             datalist.append(val)
 
     period = 0.04

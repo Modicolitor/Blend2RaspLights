@@ -6,8 +6,9 @@ from pathlib import Path
 
 
 class Songs():
-    def __init__(self):
+    def __init__(self, RBs):
         self.Songlist = []
+        self.RBs = RBs
 
     def add(self, song):
         self.Songlist.append(song)
@@ -38,11 +39,16 @@ class Songs():
                     sng.used_pis = p['used_pis']
                     sng.decription = p['description']
 
+    def update_songs(self):
+        for song in self.Songlist:
+            song.get_slaves()
+
 
 class Song(Songs):
     def __init__(self, name, parent, pis):
         self.name = name
         self.used_pis = pis  # raspname, filename
+        self.used_slaves = []  # object rasps
         self.description = ""
         self.parent = parent
 
@@ -66,7 +72,22 @@ class Song(Songs):
         self.used_pis.pop(Rasp)
         self.parent.write_json()
 
+    # takes the whole Rasberries object,updates slaves list of song and returns rasp object list
+    def get_slaves(self):
+        rasps = []
+        for rasp in self.parent.RBs.Rasplist:
+            if rasp.name in self.used_pis:
+                rasps.append(rasp)
+        print(f"rasps in get slaves{rasps} in song {self.name}")
+        self.used_slaves = rasps
+        return self.used_slaves
+
+    '''
     def playRasps(self):
+        
+        
+        
+        
         import paramiko
         import threading
         import time
@@ -84,7 +105,7 @@ class Song(Songs):
             str(futuresec) + currentimestr[19:]
 
         print(starttime)
-        filename = "Blend2BlinkTest.json"
+        filename = "Multicolortest1.json"
         sshs = []
         ips = ["10.0.1.24"]  # , "10.0.1.25"
         for ip in ips:
@@ -120,7 +141,7 @@ class Song(Songs):
         #    ssh_stdin, ssh_stouz, ssh_stderr = ssh.exec_command(
         #        'python json2blinkt-time.py')
         #    print("bambam lights on")
-        #    ssh.close()
+        #    ssh.close()'''
 
     def playVideo(self):
         import cv2  # opencv
