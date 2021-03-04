@@ -7,11 +7,20 @@ from pathlib import Path
 
 class Songs():
     def __init__(self, RBs):
-        self.Songlist = []
+        self.Songlist = []  # Songobj list
         self.RBs = RBs
+        self.songlist = []  # songname list
 
     def add(self, song):
         self.Songlist.append(song)
+        self.songlist.append(song.name)
+
+    # object --> name list
+    def fill_songlist(self):
+        self.songlist = []
+        for sng in self.Songlist:
+            self.songlist.append(sng.name)
+        return self.songlist
 
     def write_json(self):
         data = {}
@@ -39,9 +48,22 @@ class Songs():
                     sng.used_pis = p['used_pis']
                     sng.decription = p['description']
 
+        self.fill_songlist()
+
     def update_songs(self):
         for song in self.Songlist:
             song.get_slaves()
+
+    def get_song(self, songname):
+        for sng in self.Songlist:
+            if sng.name == songname:
+                return sng
+
+    def get_DDList(self):
+        DDList = self.songlist[:]
+        DDList.append(" ")
+
+        return DDList
 
 
 class Song(Songs):
@@ -123,7 +145,7 @@ class Song(Songs):
         def exe(ssh, comand):
             # comand
             ssh_stdin, ssh_stouz, ssh_stderr = ssh.exec_command(comand)
-            #"python json2blinkt-time.py"
+            # "python json2blinkt-time.py"
 
             print("bambam lights on")
             ssh.close()
@@ -146,8 +168,8 @@ class Song(Songs):
     def playVideo(self):
         import cv2  # opencv
 
-        #cap = cv2.VideoCapture("testmovie.mp4")
-        #ret, frame = cap.read()
+        # cap = cv2.VideoCapture("testmovie.mp4")
+        # ret, frame = cap.read()
         # while(1):
         #    ret, frame = cap.read()
         #    cv2.imshow('frame', frame)
@@ -156,8 +178,8 @@ class Song(Songs):
         #        cv2.destroyAllWindows()
         #        break
         #    cv2.imshow('frame', frame)
-        #import vlc
-        #player = vlc.MediaPlayer("testmovie.mp4")
+        # import vlc
+        # player = vlc.MediaPlayer("testmovie.mp4")
         # player.play()
 
     def edit(self):

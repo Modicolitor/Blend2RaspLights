@@ -8,6 +8,7 @@ from os.path import isfile, join, isdir
 class Filemanager:
     def __init__(self):
         self.songfoldername = "usersongs"
+        self.songdirpath = ""  # will be set in the next step
         self.filelist = self.load_filelist()
 
     def load_filelist(self):
@@ -37,12 +38,10 @@ class Filemanager:
     def path_from_filename(self, name):
         return join(self.songdirpath, name)
 
-    def upload_light(self, rasp, filename):
-        path = self.path_from_filename(filename)
 
-
-class Communicator():
-    def __init__(self):
+class Communicator(Filemanager):
+    def __init__(self, parent):
+        self.parent = parent
         pass
 
     def get_delaytime(self):
@@ -137,4 +136,16 @@ class Communicator():
         con = self.connect_to(rasp.IP)
         self.send_command([self.command_from_type("reboot")], [con])
 
-        # FM = Filemanager()
+    def upload_light(self, rasp, filename):
+
+        path = join(self.parent.songdirpath, filename)
+        # + self.parent.songfoldername
+        remotefilepath = join("/home/pi/", filename)
+
+        ssh = self.connect_to(rasp.IP)
+        print(f"path {path} remote {remotefilepath}")
+        ftp_client = ssh.open_sftp()
+        ftp_client.put(path, remotefilepath)  # get is downloading
+        ftp_client.close()
+
+        #self.send_command(comands, sshs)

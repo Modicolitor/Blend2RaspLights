@@ -4,6 +4,7 @@ from browsergui import GUI, Text, Button, List, Grid, TextField, Container, Drop
 from packages.rasps import Rasberries, Raspberry
 from packages.songs import Songs, Song
 from packages.filemanager import Filemanager, Communicator
+from packages.playlists import Playlists, Playlist
 
 
 RBs = Rasberries()
@@ -18,9 +19,15 @@ Songs = Songs(RBs)
 Songs.read_json()
 Songs.update_songs()
 
+PLs = Playlists(Songs)
+# try:
+PLs.read_json()
+# except:
+# PLs.write_json()
+
 
 FM = Filemanager()
-COM = Communicator()
+COM = Communicator(FM)
 
 
 # Sng = Song(name="Resistance", parent=Songs, pis={})
@@ -44,10 +51,28 @@ class Lyout1(GUI):
 
         self.guisonglist()
 
+    def GuiMain_BtnGrid(self):
+        self.cleanUI()
+        self.title = Text("Marshall AR.TS Live Suit")
+
+        PLMenuButton = self.PLMenuBtn()
+        songmenubtn = self.songMenuBtn()
+        RaspMenuButton = self.raspMenuBtn()
+        PlayMenuBtn = self.playMenuBtn()
+
+        self.MainButtongrid = Grid(n_rows=1, n_columns=4)
+        self.MainButtongrid[0, 0] = songmenubtn
+        self.MainButtongrid[0, 1] = RaspMenuButton
+        self.MainButtongrid[0, 2] = PLMenuButton
+        self.MainButtongrid[0, 3] = PlayMenuBtn
+
+        self.body.append(self.title)
+        self.body.append(self.MainButtongrid)
+
     def guisonglist(self):
         # if len(self.body) > 1:
         #    self.body.remove(self.songgrid)
-        self.cleanUI()
+        self.GuiMain_BtnGrid()
         self.songgrid = Grid(n_rows=len(self.songlist), n_columns=5)
         snglist = Songs.Songlist[:]
         for num, song in enumerate(snglist):
@@ -65,14 +90,15 @@ class Lyout1(GUI):
             self.songgrid[num, 4] = play
         # self.body.append(self.songgrid)
 
-        self.newSngBtn = Button(text="New Song", callback=self.newsong)
+        sngnameTF = TextField(value="Default")
+        self.newSngBtn = self.newsongBtn(sngnameTF)
         self.spacer = Text("      ---------------         ")
-        self.RaspMenuButton = self.raspMenuBtn()
-        self.Bottombutton = Container(
-            self.newSngBtn, self.spacer,  self.RaspMenuButton)
+        #self.RaspMenuButton = self.raspMenuBtn()
+        #PLMenuButton = self.PLMenuBtn()
+        self.Bottombutton = Container(sngnameTF, self.newSngBtn)
         # self.body.append(self.newSngBtn)
         # prinbody(self.body)
-        self.cleanUI()
+        # self.cleanUI()
         self.updatesonggrid()
 
     def sngDeleteBtn(self, song):
@@ -105,15 +131,16 @@ class Lyout1(GUI):
             # song.playVideo()
         return Button(text="Play", callback=callback)
 
-    def sng_raspUpdateBtn(self, rasps, rasp, song):
+    def sng_raspUpdateBtn(self, rasps, rasp, song, dropdown):
         def callback():
-            rasps[rasp] = self.rfilenameTfield.value
+            rasps[rasp] = dropdown.value
 
             for ras in RBs.Rasplist:
+                print(f"ras.name {ras.name} == rasp as string {rasp}")
                 if ras.name == rasp:
-                    ras.songs[song.name] = self.rfilenameTfield.value
+                    ras.songs[song.name] = dropdown.value
 
-            # self.EditSong(song)
+            self.EditSong(song)
 
         return Button(text="Update", callback=callback)
 
@@ -127,16 +154,18 @@ class Lyout1(GUI):
             self.EditSong(song)
         return Button(text="Delete", callback=callback)
 
-    def newsong(self):
-
-        sng = Song(name="Default", parent=Songs, pis={})
-        RBs.write_json()
-        Songs.write_json
-        self.guisonglist()
+    def newsongBtn(self, nametf):
+        def callback():
+            sng = Song(name=nametf.value, parent=Songs, pis={})
+            # RBs.write_json()
+            Songs.write_json()
+            self.guisonglist()
+        return Button(text="New Song", callback=callback)
 
     def updatesonggrid(self):
-        self.cleanUI()
-        self.body.append(self.title)
+        # self.cleanUI()
+        # self.body.append(self.title)
+        self.GuiMain_BtnGrid()
         self.body.append(self.songgrid)
         # self.body.append(self.newSngBtn)
         self.body.append(self.Bottombutton)
@@ -152,7 +181,7 @@ class Lyout1(GUI):
             self.body.remove(e)
 
     def EditSong(self, song):
-        self.cleanUI()
+        self.GuiMain_BtnGrid()
         # print(song.name)
         self.soedgrid = Grid(n_rows=3, n_columns=3)
         # if self.soedgrid in self.body:
@@ -180,34 +209,49 @@ class Lyout1(GUI):
         trenner = Text(
             "---------------------------------------------------------------------")
         # Rasplist of this song with filename
-        self.rasedgrid = Grid(n_rows=len(song.used_pis), n_columns=5)
+        self.rasedgrid = Grid(n_rows=len(song.used_pis), n_columns=6)
         for num, rasp in enumerate(song.used_pis):
-            # print(str(num) + rasp)
+            print(str(num) + rasp)
             rname = Text(str(rasp))
             rfilename = Text(str(song.used_pis[rasp]))
-            self.rfilenameTfield = TextField(value=song.used_pis[rasp])
+            # self.rfilenameTfield = TextField(value=song.used_pis[rasp])
+            dropdown = Dropdown(FM.filelist)
+            if rfilename.text in FM.filelist:
+                dropdown.value = rfilename.text
+
+            # str rasp --> rasp obj
+            raspname = rasp
+            for ra in RBs.Rasplist:
+                if ra.name == rasp:
+                    rasp = ra
+                    break
 
             rupdate = self.sng_raspUpdateBtn(
-                song.used_pis, rasp, song)
-            rdelete = self.sng_raspDeleteBtn(song, rasp)
+                song.used_pis, rasp.name, song, dropdown)
+            # better take the saved not the dropdown
+            rupload = self.rsnguploadBtn(rasp, rfilename.text)
+            rdelete = self.sng_raspDeleteBtn(song, rasp.name)
             self.rasedgrid[num, 0] = rname
             self.rasedgrid[num, 1] = rfilename
-            self.rasedgrid[num, 2] = self.rfilenameTfield
+            self.rasedgrid[num, 2] = dropdown  # self.rfilenameTfield
             self.rasedgrid[num, 3] = rupdate
-            self.rasedgrid[num, 4] = rdelete
+            self.rasedgrid[num, 4] = rupload
+            self.rasedgrid[num, 5] = rdelete
 
-        # dropdown = Dropdown(['Dr', 'op', 'do', 'wn'])
+        dropdown = Dropdown(FM.filelist)
         newText = Text("New Rasp")
         RaspNamelist = []
         for ra in RBs.Rasplist:
             if ra.name not in song.used_pis:
                 RaspNamelist.append(ra.name)
         RaspNamelist.append("  ")
-        self.raspsdrop = Dropdown(RaspNamelist)
-        self.newrasfilename = TextField(value="Unknown File")
-        raddButton = self.appendRasptoSongBtn(song)
+        raspsdrop = Dropdown(RaspNamelist)
+        # self.newrasfilename = TextField(value="Unknown File")
+        filedropdown = Dropdown(FM.filelist)
+
+        raddButton = self.appendRasptoSongBtn(song, raspsdrop, filedropdown)
         self.NewRaspCont = Container(
-            newText, self.raspsdrop, self.newrasfilename, raddButton)
+            newText, raspsdrop, filedropdown, raddButton)
 
         # print("appending EditSong UI")
         self.body.append(self.title)
@@ -220,16 +264,16 @@ class Lyout1(GUI):
 
         # self.cleanUI()
 
-    def appendRasptoSongBtn(self, song):
+    def appendRasptoSongBtn(self, song, raspsdrop, filedropdown):
         def callback():
-            song.addRasp(self.raspsdrop.value, self.newrasfilename.value)
+            song.addRasp(raspsdrop.value, filedropdown.value)
 
             for rasp in RBs.Rasplist:
                 print(f"rasps vorhanden {rasp.name}")
-                if self.raspsdrop.value == rasp.name:
-                    print(
-                        f"rasps richtig {rasp.name} drop value {self.raspsdrop.value}")
-                    rasp.addSong(song.name, self.newrasfilename.value)
+                if raspsdrop.value == rasp.name:
+                    # print(
+                    #    f"rasps richtig {rasp.name} drop value {self.raspsdrop.value}")
+                    rasp.addSong(song.name, filedropdown.value)
             # tester
             for rasp in RBs.Rasplist:
                 for sng in rasp.songs:
@@ -269,7 +313,7 @@ class Lyout1(GUI):
     def guiRasplist(self):
         # if len(self.body) > 1:
         #    self.body.remove(self.songgrid)
-        self.cleanUI()
+        self.GuiMain_BtnGrid()
         self.raspgrid = Grid(n_rows=len(RBs.Rasplist),
                              n_columns=7)
         rasplist = RBs.Rasplist[:]
@@ -293,17 +337,17 @@ class Lyout1(GUI):
             self.raspgrid[num, 6] = rreboot
 
         self.newRaspBtn = Button(text="New Rasp", callback=self.newrasp)
-        self.songmenubtn = self.songMenuBtn()
+        #self.songmenubtn = self.songMenuBtn()
         self.body.append(self.raspgrid)
         self.body.append(self.newRaspBtn)
-        self.body.append(self.songmenubtn)
+        # self.body.append(self.songmenubtn)
 
         # prinbody(self.body)
         # self.cleanUI()
         # self.updatesonggrid()
 
     def editRaspMenu(self, rasp):
-        self.cleanUI()
+        self.GuiMain_BtnGrid()
 
         self.raspedgrid = Grid(n_rows=3, n_columns=3)
         RaspMenuTitle = Text(f"Editiere {rasp.name}")
@@ -334,7 +378,7 @@ class Lyout1(GUI):
         for num, sng in enumerate(rasp.songs):
             sngname = Text(sng)
             sngfilename = Text(rasp.songs[sng])
-            #self.sngFiletextfield = TextField(value=rasp.songs[sng])
+            # self.sngFiletextfield = TextField(value=rasp.songs[sng])
 
             dropdown = Dropdown(FM.filelist)
             if sngfilename.text in FM.filelist:
@@ -342,7 +386,7 @@ class Lyout1(GUI):
 
             updateBtn = self.rsngupdateBtn(
                 rasp.songs, sng, rasp, dropdown)
-            uploadBtn = self.rsnguploadBtn(rasp, dropdown)
+            uploadBtn = self.rsnguploadBtn(rasp, dropdown.value)
             deleteBtn = self.rsngdeleteBtn(rasp.songs, sng, rasp)
 
             self.raspSonglistgrid[num, 0] = sngname
@@ -351,19 +395,22 @@ class Lyout1(GUI):
             self.raspSonglistgrid[num, 3] = updateBtn
             self.raspSonglistgrid[num, 4] = uploadBtn
             self.raspSonglistgrid[num, 5] = deleteBtn
+            # self.raspSonglistgrid[num, 5] = deleteBtn
 
         # new song dropdown
         newText = Text("New Song")
-        RaspNamelist = []
-        print(f"rasp songs {Songs.Songlist}")
-        print(f"rasp songs {rasp.songs}")
-        for son in Songs.Songlist:
-            if son.name not in rasp.songs:
-                RaspNamelist.append(son.name)
-        RaspNamelist.append("  ")
-        self.rsongdrop = Dropdown(RaspNamelist)
+        #RaspNamelist = []
+        # print(f"rasp songs {Songs.Songlist}")
+        # print(f"rasp songs {rasp.songs}")
+        # for son in Songs.Songlist:
+        #    if son.name not in rasp.songs:
+        #        RaspNamelist.append(son.name)
+        #RaspNamelist.append("  ")
 
-        #self.newrasfilename = TextField(value="Unknown File")
+        SongNamelist = Songs.get_DDList()
+        self.rsongdrop = Dropdown(SongNamelist)
+
+        # self.newrasfilename = TextField(value="Unknown File")
 
         self.raddButton = self.appendsongtoraspbtn(
             rasp)
@@ -382,7 +429,7 @@ class Lyout1(GUI):
 
     def rsngupdateBtn(self, songs, song, rasp, dropdown):
         def callback():
-            #print(f"enum des knopfes ist {enum}")
+            # print(f"enum des knopfes ist {enum}")
             filename = dropdown.value
             songs[song] = filename  # self.sngFiletextfield.value
 
@@ -395,13 +442,13 @@ class Lyout1(GUI):
             self.editRaspMenu(rasp)
         return Button(text="Update", callback=callback)
 
-    def rsnguploadBtn(self, rasp, dropdown):
+    def rsnguploadBtn(self, rasp, value):
         def callback():
-            #print(f"enum des knopfes ist {enum}")
-            filename = dropdown.value
+            # print(f"enum des knopfes ist {enum}")
+            filename = value
 
             # tell file manager to upload
-            FM.upload_light(rasp, filename)
+            COM.upload_light(rasp, filename)
 
             # self.editRaspMenu(rasp)
         return Button(text="Upload", callback=callback)
@@ -489,6 +536,153 @@ class Lyout1(GUI):
             COM.reboot_rasp(rasp)
 
         return Button(text="Reboot", callback=callback)
+
+
+###############################################
+###############################################Playlistgui#####
+
+
+    def guiPlaylists(self):
+        # if len(self.body) > 1:
+        #    self.body.remove(self.songgrid)
+        self.GuiMain_BtnGrid()
+        self.plgrid = Grid(n_rows=len(PLs.Playlistlist),
+                           n_columns=5)
+        playlistlist = PLs.Playlistlist[:]
+        for num, pl in enumerate(playlistlist):
+            # print(f"song {song} song.name {song.name} num {num}")
+
+            n = Text(str(num))
+            t = Text(pl.name)
+            used_songs = Text(str(pl.used_songs))
+            redit = self.plEditBtn(pl)
+            rdelete = self.plDeleteBtn(pl)
+            # rshutdown = self.raspshutdownBtn(rasp)
+            # rreboot = self.raspsrebootBtn(rasp)
+
+            self.plgrid[num, 0] = n
+            self.plgrid[num, 1] = t
+            self.plgrid[num, 2] = used_songs
+            self.plgrid[num, 3] = redit
+            self.plgrid[num, 4] = rdelete
+            # self.plgrid[num, 5] = rshutdown
+            # self.plgrid[num, 6] = rreboot
+        self.nfNewpl = TextField(value='Default')
+        # Button(text="New Playlist", callback=PLs.add()
+        self.newPLBtn = self.newplBtn()
+        self.body.append(self.plgrid)
+        self.body.append(self.nfNewpl)
+        self.body.append(self.newPLBtn)
+        # self.body.append(self.songmenubtn)
+
+    # Edit Playlist
+    def guiEditPlaylist(self, pl):
+        # self.cleanUI()
+        self.GuiMain_BtnGrid()
+        self.plsnggrid = Grid(n_rows=len(pl.songs),
+                              n_columns=8)
+        # playlistlist = PLs.Playlistlist[:]
+        for num, sng in enumerate(pl.songs[:]):
+            # print(f"song {song} song.name {song.name} num {num}")
+
+            n = Text(str(num))
+            t = Text(sng.name)
+            delaytime = Text(text=pl.used_songs[sng.name])
+            delayset = TextField(value=pl.used_songs[sng.name])
+            rup = self.plsngupBtn(pl, sng)
+            rdown = self.plsngdownBtn(pl, sng)
+            rsngupdate = self.plsngupdateBtn(pl, sng, delayset)
+            rdelete = self.plsngdeleteBtn(pl, sng)
+            # rreboot = self.raspsrebootBtn(rasp)
+
+            self.plsnggrid[num, 0] = n
+            self.plsnggrid[num, 1] = t
+            self.plsnggrid[num, 2] = delaytime
+            self.plsnggrid[num, 3] = delayset
+            self.plsnggrid[num, 4] = rup
+            self.plsnggrid[num, 5] = rdown
+            self.plsnggrid[num, 6] = rsngupdate
+            self.plsnggrid[num, 7] = rdelete
+            # self.plgrid[num, 6] = rreboot
+
+        self.plsong = Dropdown(Songs.get_DDList())
+        pausefield = TextField("0")
+        self.newsngBtn = self.plsngnewBtn(pl, self.plsong, pausefield)
+
+        self.body.append(self.plsnggrid)
+        self.body.append(self.plsong)
+        self.body.append(pausefield)
+        self.body.append(self.newsngBtn)
+
+    def PLMenuBtn(self):
+        def callback():
+            self.guiPlaylists()
+        return Button(text="Playlist Manager", callback=callback)
+
+    def plEditBtn(self, pl):
+        def callback():
+            self.guiEditPlaylist(pl)
+        return Button(text="Edit", callback=callback)
+
+    def newplBtn(self):
+        def callback():
+            # PLs.add()
+            pl = Playlist(name=self.nfNewpl.value, parent=PLs)
+            PLs.write_json()
+
+            self.guiPlaylists()
+
+        return Button(text="New Playlist", callback=callback)
+
+    def plsngnewBtn(self, pl, songdd, pausefield):
+        def callback():
+            pause = pausefield.value
+            pl.add_song(Songs.get_song(songdd.value), pause)
+            self.guiEditPlaylist(pl)
+        return Button(text="New Song", callback=callback)
+
+    def plDeleteBtn(self, pl):
+        def callback():
+            pl.remove()
+            self.guiPlaylists()
+        return Button(text="Delete", callback=callback)
+
+    def plsngdeleteBtn(self, pl, song):
+        def callback():
+            pl.remove_song(song)
+            self.guiEditPlaylist(pl)
+        return Button(text="Delete", callback=callback)
+
+    def plsngupdateBtn(self, pl, sng, pausetime):
+        def callback():
+            ptime = pausetime.value
+            pl.used_songs[sng.name] = ptime
+            PLs.write_json()
+            self.guiEditPlaylist(pl)
+        return Button(text="Update", callback=callback)
+
+    def plsngupBtn(self, pl, song):
+        def callback():
+            pl.up(song)
+            self.guiEditPlaylist(pl)
+        return Button(text="Up", callback=callback)
+
+    def plsngdownBtn(self, pl, song):
+        def callback():
+            pl.down(song)
+            self.guiEditPlaylist(pl)
+        return Button(text="Down", callback=callback)
+
+
+####################
+# Playmode
+
+
+    def playMenuBtn(self):
+        def callback():
+            pass
+            # self.guiEditPlaylist(pl)
+        return Button(text="Play Mode", callback=callback)
 
 
 def main():
