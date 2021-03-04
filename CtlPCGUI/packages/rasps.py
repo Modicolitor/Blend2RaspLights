@@ -46,6 +46,7 @@ class Raspberry(Rasberries):
         self.IP = "10.1.0.20"
         self.description = ""
         self.parent = parent
+        # <---dict  {songname : ["filename .json","scritps .py"]}
         self.songs = {}
 
         parent.add(self)
@@ -63,8 +64,8 @@ class Raspberry(Rasberries):
     def test(self):
         print("editieren")
 
-    def addSong(self, songname, filename):
-        self.songs[songname] = filename
+    def addSong(self, songname, filename, scriptname):
+        self.songs[songname] = [filename, scriptname]
         self.parent.write_json()
 
     def removeSong(self, song):

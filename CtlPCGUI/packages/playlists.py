@@ -45,7 +45,8 @@ class Playlists():
 class Playlist(Playlists):
     def __init__(self, name, parent):
         self.name = name
-        self.used_songs = {}  # song names <-- Dictionary with Pauseafter, and script file
+        # song names <-- Dictionary with Pauseafter, and, !!!songlength!!! !!!videofile!!!
+        self.used_songs = {}
         self.songs = []  # object songs
         self.description = ""
 

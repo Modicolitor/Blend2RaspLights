@@ -8,8 +8,11 @@ from os.path import isfile, join, isdir
 class Filemanager:
     def __init__(self):
         self.songfoldername = "usersongs"
+        self.scriptfoldername = "userscript"
         self.songdirpath = ""  # will be set in the next step
+        scriptdirpath = ""
         self.filelist = self.load_filelist()
+        self.scriptlist = self.load_scriptlist()
 
     def load_filelist(self):
         # path = os.path()
@@ -37,6 +40,22 @@ class Filemanager:
 
     def path_from_filename(self, name):
         return join(self.songdirpath, name)
+
+    def load_scriptlist(self):
+
+        self.scriptlist = []
+        self.workpath = os.getcwd()
+        self.scriptdirpath = join(self.workpath, self.scriptfoldername)
+
+        if not isdir(self.scriptdirpath):
+            self.genfolder(self.scriptdirpath)
+
+        self.scriptlist = [f for f in listdir(
+            self.scriptdirpath) if isfile(join(self.scriptdirpath, f))]
+
+        self.scriptlist.insert(0, " ")
+        print(self.scriptlist)
+        return self.scriptlist
 
 
 class Communicator(Filemanager):
@@ -137,15 +156,19 @@ class Communicator(Filemanager):
         self.send_command([self.command_from_type("reboot")], [con])
 
     def upload_light(self, rasp, filename):
+        homepath = join(self.parent.songdirpath, filename)
+        remotepath = join("/home/pi/", filename)
+        self.upload(rasp, homepath, remotepath)
 
-        path = join(self.parent.songdirpath, filename)
-        # + self.parent.songfoldername
-        remotefilepath = join("/home/pi/", filename)
+    def upload_script(self, rasp, scriptname):
+        homepath = join(self.parent.scriptdirpath, scriptname)
+        remotepath = join("/home/pi/", scriptname)
+        self.upload(rasp, homepath, remotepath)
 
+    def upload(self, rasp, homepath, remotepath):
         ssh = self.connect_to(rasp.IP)
-        print(f"path {path} remote {remotefilepath}")
         ftp_client = ssh.open_sftp()
-        ftp_client.put(path, remotefilepath)  # get is downloading
+        ftp_client.put(homepath, remotepath)  # get is downloading
         ftp_client.close()
 
         #self.send_command(comands, sshs)
