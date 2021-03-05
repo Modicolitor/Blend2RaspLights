@@ -57,9 +57,13 @@ class Playlist(Playlists):
         self.parent.Playlistlist.remove(self)
         self.parent.write_json()
 
-    def add_song(self, song, pause):
+    def add_song(self, song, pause, songlenth, videofile):
         self.songs.append(song)
-        self.used_songs[song.name] = pause
+
+        self.used_songs[song.name] = [pause, songlenth, videofile]
+        #plitemdata[0] = pause
+        #plitemdata[1] = songlenth
+        #plitemdata[2] = videofile
         self.parent.write_json()
 
     def remove_song(self, song):

@@ -3,6 +3,9 @@ import time
 #import threading
 from pathlib import Path
 
+from os import listdir
+from os.path import isfile, join, isdir
+
 
 class Rasberries():
     def __init__(self):
@@ -26,6 +29,10 @@ class Rasberries():
             json.dump(data, outfile)
 
     def read_json(self):
+        filename = "user_rasps.json"
+
+        folderpath = FM.self.appdatafoldername
+        path = join()
 
         my_file = Path("user_rasps.json")
         if my_file.is_file():

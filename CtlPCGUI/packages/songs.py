@@ -4,6 +4,9 @@ import threading
 from pathlib import Path
 # from gui import Lyout1
 
+from os import listdir
+from os.path import isfile, join, isdir
+
 
 class Songs():
     def __init__(self, RBs):

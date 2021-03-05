@@ -2,30 +2,29 @@
 
 
 
-[] song should send Rasps(ips) and file name to central ssh connector 
-[] json file central database 
-    [] json file name pro song and raps, each rasp shoudld have a table with all connected songs and the filename  (filename of json on  connection)
-    [] dropdown of avaiable json files
 
-
-[] update button in edit songs and rasp funktioniert nicht, aber save button unten dafür
-[] save button in edit songs updates filenames not correctly
 
 [] show mode
     [] stop 
     [] pause (stop + anderes pause video wird gespielt)
-    [] intervall zwischen songs 
-    [] playlist editor
-    [] multiple playlists
     [] skip
     [] restart song 
+
+
+    video player
+    
+    [] test rasp activity
+    [+] intervall zwischen songs 
+    [+] playlist editor
+    [+] multiple playlists
+    
 
 
 
 rasps: 
     [] connection tester for rasps 
-    [] fileupdater sending jsons file to rasps
-    [] shutdown, reboot raps
+    [+] fileupdater sending jsons file to rasps
+    [+] shutdown, reboot raps
 
 [] json2blinkt all pixel version 
     [] second argument "jsonfilename" for in json2blinkt and "PlayRasp" ssh starter

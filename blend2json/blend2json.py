@@ -30,6 +30,10 @@ class BJ_OT_BlinktElementsGenOperator(bpy.types.Operator):
     bl_label = "BlinktElementsGen"
 
     def execute(self, context):
+        print(t.text)
+        t.chng_text("something")
+        print(t.text)
+
         data = bpy.data
 
         matbool = True
@@ -220,3 +224,20 @@ classes = (BJ_OT_BlinktElementsGenOperator,
            BJ_PT_Blend2BlinkUI)
 
 register, unregister = bpy.utils.register_classes_factory(classes)
+
+# testing non-bound classes in blender
+
+
+class test():
+    def __init__(self):
+        self.text = "I'm a non Blender object"
+
+    def chng_text(self, text):
+        self.text = text
+
+
+t = test()
+
+print(t.text)
+t.chng_text("something")
+print(t.text)

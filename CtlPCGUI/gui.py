@@ -23,10 +23,10 @@ Songs.read_json()
 Songs.update_songs()
 
 PLs = Playlists(Songs)
-# try:
-PLs.read_json()
-# except:
-# PLs.write_json()
+try:
+    PLs.read_json()
+except:
+    PLs.write_json()
 
 
 FM = Filemanager()
@@ -96,8 +96,8 @@ class Lyout1(GUI):
         sngnameTF = TextField(value="Default")
         self.newSngBtn = self.newsongBtn(sngnameTF)
         self.spacer = Text("      ---------------         ")
-        #self.RaspMenuButton = self.raspMenuBtn()
-        #PLMenuButton = self.PLMenuBtn()
+        # self.RaspMenuButton = self.raspMenuBtn()
+        # PLMenuButton = self.PLMenuBtn()
         self.Bottombutton = Container(sngnameTF, self.newSngBtn)
         # self.body.append(self.newSngBtn)
         # prinbody(self.body)
@@ -340,7 +340,7 @@ class Lyout1(GUI):
             self.raspgrid[num, 6] = rreboot
 
         self.newRaspBtn = Button(text="New Rasp", callback=self.newrasp)
-        #self.songmenubtn = self.songMenuBtn()
+        # self.songmenubtn = self.songMenuBtn()
         self.body.append(self.raspgrid)
         self.body.append(self.newRaspBtn)
         # self.body.append(self.songmenubtn)
@@ -599,15 +599,21 @@ class Lyout1(GUI):
         # self.cleanUI()
         self.GuiMain_BtnGrid()
         self.plsnggrid = Grid(n_rows=len(pl.songs),
-                              n_columns=8)
+                              n_columns=10)
         # playlistlist = PLs.Playlistlist[:]
         for num, sng in enumerate(pl.songs[:]):
             # print(f"song {song} song.name {song.name} num {num}")
 
             n = Text(str(num))
             t = Text(sng.name)
-            delaytime = Text(text=pl.used_songs[sng.name])
-            delayset = TextField(value=pl.used_songs[sng.name])
+            plsongdata = pl.used_songs[sng.name]
+            delaytime = Text(text=plsongdata[0])
+            delayset = TextField(value=str(plsongdata[0]))
+            songlengthset = TextField(value=str(plsongdata[1]))
+            # songlengthset.value = str(plsongdata[1])str
+            videodd = Dropdown(FM.videolist)
+            videodd.value = plsongdata[2]
+
             rup = self.plsngupBtn(pl, sng)
             rdown = self.plsngdownBtn(pl, sng)
             rsngupdate = self.plsngupdateBtn(pl, sng, delayset)
@@ -618,19 +624,27 @@ class Lyout1(GUI):
             self.plsnggrid[num, 1] = t
             self.plsnggrid[num, 2] = delaytime
             self.plsnggrid[num, 3] = delayset
-            self.plsnggrid[num, 4] = rup
-            self.plsnggrid[num, 5] = rdown
-            self.plsnggrid[num, 6] = rsngupdate
-            self.plsnggrid[num, 7] = rdelete
+            self.plsnggrid[num, 4] = songlengthset
+            self.plsnggrid[num, 5] = videodd
+            self.plsnggrid[num, 6] = rup
+            self.plsnggrid[num, 7] = rdown
+            self.plsnggrid[num, 8] = rsngupdate
+            self.plsnggrid[num, 9] = rdelete
             # self.plgrid[num, 6] = rreboot
 
         self.plsong = Dropdown(Songs.get_DDList())
         pausefield = TextField("0")
-        self.newsngBtn = self.plsngnewBtn(pl, self.plsong, pausefield)
+        songlengthfield = TextField("120")
+        # songlengthfield = TextField("120")
+        videodd = Dropdown(FM.videolist)
+        self.newsngBtn = self.plsngnewBtn(
+            pl, self.plsong, pausefield, songlengthfield, videodd)
 
         self.body.append(self.plsnggrid)
         self.body.append(self.plsong)
         self.body.append(pausefield)
+        self.body.append(songlengthfield)
+        self.body.append(videodd)
         self.body.append(self.newsngBtn)
 
     def PLMenuBtn(self):
@@ -653,10 +667,15 @@ class Lyout1(GUI):
 
         return Button(text="New Playlist", callback=callback)
 
-    def plsngnewBtn(self, pl, songdd, pausefield):
+    def plsngnewBtn(self, pl, songdd, pausefield, songlength, video):
         def callback():
             pause = pausefield.value
-            pl.add_song(Songs.get_song(songdd.value), pause)
+            songleng = float(songlength.value)
+            vid = video.value
+
+            pl.add_song(Songs.get_song(songdd.value),
+                        pause, songleng, vid)
+
             self.guiEditPlaylist(pl)
         return Button(text="New Song", callback=callback)
 

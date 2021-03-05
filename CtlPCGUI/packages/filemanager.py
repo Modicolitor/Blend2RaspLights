@@ -7,12 +7,17 @@ from os.path import isfile, join, isdir
 
 class Filemanager:
     def __init__(self):
+        self.settings = ""  # must be written
+        self.appdatafoldername = "appdata"
         self.songfoldername = "usersongs"
-        self.scriptfoldername = "userscript"
+        self.scriptfoldername = "userscripts"
+        self.videofoldername = "uservideo"
+
         self.songdirpath = ""  # will be set in the next step
         scriptdirpath = ""
         self.filelist = self.load_filelist()
         self.scriptlist = self.load_scriptlist()
+        self.videolist = self.load_videolist()
 
     def load_filelist(self):
         # path = os.path()
@@ -41,6 +46,9 @@ class Filemanager:
     def path_from_filename(self, name):
         return join(self.songdirpath, name)
 
+    def load_settings(self):
+        pass
+
     def load_scriptlist(self):
 
         self.scriptlist = []
@@ -56,6 +64,22 @@ class Filemanager:
         self.scriptlist.insert(0, " ")
         print(self.scriptlist)
         return self.scriptlist
+
+    def load_videolist(self):
+
+        self.videolist = []
+        self.workpath = os.getcwd()
+        self.videodirpath = join(self.workpath, self.videofoldername)
+
+        if not isdir(self.videodirpath):
+            self.genfolder(self.videodirpath)
+
+        self.videolist = [f for f in listdir(
+            self.videodirpath) if isfile(join(self.videodirpath, f))]
+
+        self.videolist.insert(0, " ")
+        print(self.videolist)
+        return self.videolist
 
 
 class Communicator(Filemanager):
@@ -114,7 +138,8 @@ class Communicator(Filemanager):
             return "sudo reboot now"
 
     def get_filename(self, rasp, song):
-        return rasp.songs[song.name]  # = filename
+        file = rasp.songs[song.name]
+        return file[0]  # = filename
 
     def connect_to(self, ip):
         print(f"ip {ip} in connect to")
