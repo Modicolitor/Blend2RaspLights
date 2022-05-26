@@ -8,7 +8,9 @@ from pathlib import Path
 class Playlists():
     def __init__(self, SongsCol):
         self.Playlistlist = []
+        self.Playliststrings = []
         self.SongsCol = SongsCol  # Main SongsObject
+        self.active = None
 
     def add(self, pl):
         self.Playlistlist.append(pl)
@@ -27,6 +29,7 @@ class Playlists():
 
         with open('user_pls.json', 'w') as outfile:
             json.dump(data, outfile)
+        self.get_playliststrings()
 
     def read_json(self):
         my_file = Path("user_pls.json")
@@ -37,9 +40,15 @@ class Playlists():
                     # print(f"generating {p.name}")
                     pl = Playlist(name=p['name'], parent=self)
                     pl.used_songs = p['used_songs']
-                    pl.decription = p['description']
+                    pl.description = p['description']
 
                     pl.fill_songobj()  # makes the songsob list from the used _songs
+        self.get_playliststrings()
+
+    def get_playliststrings(self):
+        self.Playliststrings = []
+        for ele in self.Playlistlist:
+            self.Playliststrings.append(ele.name)
 
 
 class Playlist(Playlists):

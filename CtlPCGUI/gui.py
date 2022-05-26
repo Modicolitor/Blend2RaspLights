@@ -6,10 +6,11 @@ from packages.songs import Songs, Song
 from packages.filemanager import Filemanager, Communicator
 from packages.playlists import Playlists, Playlist
 
-
+FM = Filemanager()
+COM = Communicator(FM)
 RBs = Rasberries()
 try:
-    RBs.read_json()
+    RBs.read_json(FM)
 except:
     RBs.write_json()
 
@@ -28,9 +29,8 @@ try:
 except:
     PLs.write_json()
 
-
-FM = Filemanager()
-COM = Communicator(FM)
+#FM = Filemanager()
+#COM = Communicator(FM)
 
 
 # Sng = Song(name="Resistance", parent=Songs, pis={})
@@ -524,6 +524,7 @@ class Lyout1(GUI):
     def newrasp(self):
 
         newrasp = Raspberry(parent=RBs)
+        RBs.write_json()
         self.guiRasplist()
 
     def raspEditBtn(self, rasp):
@@ -534,13 +535,14 @@ class Lyout1(GUI):
     def raspDeleteBtn(self, rasp):
         def callback():
             print(f"Deleted {rasp.name}")
-            rasp.removeRasp()
+            rasp.removeRasp(rasp)
 
             for song in Songs.Songlist:
-                for pi in song.used_pis:
+                used_pies = song.used_pis.copy()
+                for pi in used_pies:
                     if pi == rasp.name:
                         song.removeRasp(pi)
-
+            self.guiRasplist()
         return Button(text="Delete", callback=callback)
 
     def raspshutdownBtn(self, rasp):
@@ -598,16 +600,22 @@ class Lyout1(GUI):
     def guiEditPlaylist(self, pl):
         # self.cleanUI()
         self.GuiMain_BtnGrid()
-        self.plsnggrid = Grid(n_rows=len(pl.songs),
-                              n_columns=10)
+        self.plsnggrid = Grid(n_rows=len(pl.songs)+1,
+                              n_columns=9)  # plus one for header
+
         # playlistlist = PLs.Playlistlist[:]
+        # table header
+        self.plsnggrid[0, 0] = 'Nr.'
+        self.plsnggrid[0, 1] = 'Name'
+        self.plsnggrid[0, 2] = 'Delay After'
+        self.plsnggrid[0, 3] = 'Songlength'
         for num, sng in enumerate(pl.songs[:]):
             # print(f"song {song} song.name {song.name} num {num}")
-
+            num += 1
             n = Text(str(num))
             t = Text(sng.name)
             plsongdata = pl.used_songs[sng.name]
-            delaytime = Text(text=plsongdata[0])
+            #delaytime = Text(text=plsongdata[0])
             delayset = TextField(value=str(plsongdata[0]))
             songlengthset = TextField(value=str(plsongdata[1]))
             # songlengthset.value = str(plsongdata[1])str
@@ -616,20 +624,21 @@ class Lyout1(GUI):
 
             rup = self.plsngupBtn(pl, sng)
             rdown = self.plsngdownBtn(pl, sng)
-            rsngupdate = self.plsngupdateBtn(pl, sng, delayset)
+            rsngupdate = self.plsngupdateBtn(
+                pl, sng, delayset, songlengthset, videodd)
             rdelete = self.plsngdeleteBtn(pl, sng)
             # rreboot = self.raspsrebootBtn(rasp)
 
             self.plsnggrid[num, 0] = n
             self.plsnggrid[num, 1] = t
-            self.plsnggrid[num, 2] = delaytime
-            self.plsnggrid[num, 3] = delayset
-            self.plsnggrid[num, 4] = songlengthset
-            self.plsnggrid[num, 5] = videodd
-            self.plsnggrid[num, 6] = rup
-            self.plsnggrid[num, 7] = rdown
-            self.plsnggrid[num, 8] = rsngupdate
-            self.plsnggrid[num, 9] = rdelete
+            #self.plsnggrid[num, 2] = delaytime
+            self.plsnggrid[num, 2] = delayset
+            self.plsnggrid[num, 3] = songlengthset
+            self.plsnggrid[num, 4] = videodd
+            self.plsnggrid[num, 5] = rup
+            self.plsnggrid[num, 6] = rdown
+            self.plsnggrid[num, 7] = rsngupdate
+            self.plsnggrid[num, 8] = rdelete
             # self.plgrid[num, 6] = rreboot
 
         self.plsong = Dropdown(Songs.get_DDList())
@@ -691,10 +700,12 @@ class Lyout1(GUI):
             self.guiEditPlaylist(pl)
         return Button(text="Delete", callback=callback)
 
-    def plsngupdateBtn(self, pl, sng, pausetime):
+    def plsngupdateBtn(self, pl, sng, pausetime,  songlengthset, videodd):
         def callback():
             ptime = pausetime.value
-            pl.used_songs[sng.name] = ptime
+            songlength = songlengthset.value
+            video = videodd.value
+            pl.used_songs[sng.name] = [ptime, songlength, video]
             PLs.write_json()
             self.guiEditPlaylist(pl)
         return Button(text="Update", callback=callback)
@@ -715,10 +726,20 @@ class Lyout1(GUI):
 ####################
 # Playmode
 
+    def guiPlaymode(self):
+
+        self.GuiMain_BtnGrid()
+        # mache dropdown mit pls
+        dropdown = Dropdown(PLs.Playliststrings)
+
+        self.body.append(dropdown)
+        # gibt es eine Aktive Playlist?
+        # show all songs
+
     def playMenuBtn(self):
         def callback():
-            pass
-            # self.guiEditPlaylist(pl)
+            self.guiPlaymode()
+
         return Button(text="Play Mode", callback=callback)
 
 

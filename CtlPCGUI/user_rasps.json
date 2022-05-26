@@ -1,1 +1,1 @@
-{"rasps": [{"name": "Rasp", "IP": "10.0.1.25", "Songs": {"Redemption": ["Multicolortest2.json", "json2blinkt-time_MultiColor.py"]}, "description": ""}]}
+{"rasps": [{"name": "Rasp", "IP": "10.1.0.20", "Songs": {}, "description": ""}, {"name": "Rasp", "IP": "10.1.0.20", "Songs": {}, "description": ""}, {"name": "Rasp", "IP": "10.1.0.20", "Songs": {}, "description": ""}, {"name": "Rasp", "IP": "10.1.0.20", "Songs": {}, "description": ""}]}

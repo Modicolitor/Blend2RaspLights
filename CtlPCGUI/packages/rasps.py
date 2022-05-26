@@ -27,12 +27,13 @@ class Rasberries():
 
         with open('user_rasps.json', 'w') as outfile:
             json.dump(data, outfile)
+        print('I write json')
 
-    def read_json(self):
+    def read_json(self, FM):
         filename = "user_rasps.json"
 
-        folderpath = FM.self.appdatafoldername
-        path = join()
+        folderpath = FM.appdatafoldername
+        path = join(folderpath, filename)
 
         my_file = Path("user_rasps.json")
         if my_file.is_file():
@@ -45,6 +46,8 @@ class Rasberries():
                     rsp.IP = p['IP']
                     rsp.songs = p['Songs']
                     rsp.decription = p['description']
+
+        print('Im reading json')
 
 
 class Raspberry(Rasberries):
