@@ -41,7 +41,6 @@ class Playlists():
                     pl = Playlist(name=p['name'], parent=self)
                     pl.used_songs = p['used_songs']
                     pl.description = p['description']
-
                     pl.fill_songobj()  # makes the songsob list from the used _songs
         self.get_playliststrings()
 
@@ -49,6 +48,12 @@ class Playlists():
         self.Playliststrings = []
         for ele in self.Playlistlist:
             self.Playliststrings.append(ele.name)
+
+    def get_PL_from_name(self, PL_name):
+        for PL in self.Playlistlist:
+            if PL.name == PL_name:
+                return PL
+        return None
 
 
 class Playlist(Playlists):

@@ -1,8 +1,12 @@
 
+###Problems 
+## video path is saved at least in PL and song --> will lead to Problems
+#structure should be better documented
 
 
+[] what happens when there are no loops
 
-
+[] remove songs from pls when songs are removed
 
 [] show mode
     [] stop 

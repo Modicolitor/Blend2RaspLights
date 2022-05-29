@@ -1,1 +1,1 @@
-{"rasps": [{"name": "Rasp", "IP": "10.1.0.20", "Songs": {}, "description": ""}, {"name": "Rasp", "IP": "10.1.0.20", "Songs": {}, "description": ""}, {"name": "Rasp", "IP": "10.1.0.20", "Songs": {}, "description": ""}, {"name": "Rasp", "IP": "10.1.0.20", "Songs": {}, "description": ""}]}
+{"rasps": [{"name": "Rasp", "IP": "192.168.0.105", "Songs": {"Mind": [[[" ", " "], " "], " "]}, "description": "", "is_video_pi": true}]}

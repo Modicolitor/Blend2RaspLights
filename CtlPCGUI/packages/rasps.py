@@ -22,7 +22,8 @@ class Rasberries():
                 'name': d.name,
                 'IP': d.IP,
                 'Songs': d.songs,
-                'description': d.description
+                'description': d.description,
+                'is_video_pi': d.is_video_pi
             })
 
         with open('user_rasps.json', 'w') as outfile:
@@ -45,9 +46,19 @@ class Rasberries():
                     rsp.name = p['name']
                     rsp.IP = p['IP']
                     rsp.songs = p['Songs']
-                    rsp.decription = p['description']
+                    rsp.description = p['description']
+                    rsp.is_video_pi = p['is_video_pi']
 
         print('Im reading json')
+
+    def get_rasp(self, raspname):
+        print(f"raspname {raspname}")
+        for pi in self.Rasplist:
+            if pi.name == raspname:
+                print('foundpi')
+                return pi
+        print("NOOO!! Couldn't find rasp")
+        return None
 
 
 class Raspberry(Rasberries):
@@ -58,6 +69,7 @@ class Raspberry(Rasberries):
         self.parent = parent
         # <---dict  {songname : ["filename .json","scritps .py"]}
         self.songs = {}
+        self.is_video_pi = False
 
         parent.add(self)
 
@@ -79,5 +91,6 @@ class Raspberry(Rasberries):
         self.parent.write_json()
 
     def removeSong(self, song):
-        self.songs.pop(song)
+        print(self.songs)
+        self.songs.pop(song.name)
         self.parent.write_json()

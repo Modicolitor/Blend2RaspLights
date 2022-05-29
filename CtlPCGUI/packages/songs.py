@@ -34,6 +34,7 @@ class Songs():
             data['songs'].append({
                 'name': d.name,
                 'used_pis': d.used_pis,
+                'used_video': d.used_video,
                 'description': d.description
             })
 
@@ -49,6 +50,7 @@ class Songs():
                     # print(f"generating {p.name}")
                     sng = Song(name=p['name'], parent=self, pis={})
                     sng.used_pis = p['used_pis']
+                    sng.used_video = p['used_video']
                     sng.decription = p['description']
 
         self.fill_songlist()
@@ -62,7 +64,11 @@ class Songs():
             if sng.name == songname:
                 return sng
 
+        print("NO!!! Can't find Song")
+        return None
+
     def get_DDList(self):
+        self.fill_songlist()
         DDList = self.songlist[:]
         DDList.append(" ")
 
@@ -74,6 +80,7 @@ class Song(Songs):
         self.name = name
         self.used_pis = pis  # raspname, filename
         self.used_slaves = []  # object rasps
+        self.used_video = ""
         self.description = ""
         self.parent = parent
 

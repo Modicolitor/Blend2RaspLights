@@ -12,12 +12,14 @@ class Filemanager:
         self.songfoldername = "usersongs"
         self.scriptfoldername = "userscripts"
         self.videofoldername = "uservideo"
-
         self.songdirpath = ""  # will be set in the next step
+        self.targetvidopath = "/home/pi/uservideo/"
         scriptdirpath = ""
+        #self.videodirpath = "uservideo"
         self.filelist = self.load_filelist()
         self.scriptlist = self.load_scriptlist()
         self.videolist = self.load_videolist()
+        self.loops = self.load_looplist()
 
     def load_filelist(self):
         # path = os.path()
@@ -75,11 +77,26 @@ class Filemanager:
             self.genfolder(self.videodirpath)
 
         self.videolist = [f for f in listdir(
-            self.videodirpath) if isfile(join(self.videodirpath, f))]
+            self.videodirpath) if isfile(join(self.videodirpath, f))]  # and not 'loop' in f
 
         self.videolist.insert(0, " ")
         print(self.videolist)
         return self.videolist
+
+    def load_looplist(self):
+        self.looplist = []
+        self.workpath = os.getcwd()
+        self.videodirpath = join(self.workpath, self.videofoldername)
+
+        if not isdir(self.videodirpath):
+            self.genfolder(self.videodirpath)
+
+        self.looplist = [f for f in listdir(
+            self.videodirpath) if isfile(join(self.videodirpath, f)) and 'loop' in f]
+
+        #self.looplist.insert(0, " ")
+        print(self.looplist)
+        return self.looplist
 
 
 class Communicator(Filemanager):
@@ -148,10 +165,11 @@ class Communicator(Filemanager):
 
         ssh.connect(ip,  username="pi",
                     password="B!um3nBo+")
-        print(f"sshdone")
+        print(f"ssh started")
         return ssh
 
     def send_command(self, comands, sshs):
+        # send one command per ssh, by equal position in List
         import threading
 
         def exe(ssh, comand):
@@ -159,13 +177,17 @@ class Communicator(Filemanager):
             print(f"comand bevor sending '{comand}'")
             ssh_stdin, ssh_stouz, ssh_stderr = ssh.exec_command(comand)
             # "python json2blinkt-time.py"
-
+            print(ssh_stouz)
+            print(ssh_stdin)
+            print(ssh_stderr)
             print("bambam lights on")
-            ssh.close()
+            # ssh.close()
 
         threads = set()
+        # for cnum, comand in enumerate(comands):
         for num, ssh in enumerate(sshs):
-            threads.add(threading.Thread(target=exe, args=[ssh, comands[num]]))
+            threads.add(threading.Thread(
+                target=exe, args=[ssh, comands[num]]))
 
         for thread in threads:
             thread.start()
@@ -182,18 +204,29 @@ class Communicator(Filemanager):
 
     def upload_light(self, rasp, filename):
         homepath = join(self.parent.songdirpath, filename)
-        remotepath = join("/home/pi/", filename)
-        self.upload(rasp, homepath, remotepath)
+        remote_homefolder = "/home/pi/"
+        remotepath = join(remote_homefolder, filename)
+        self.upload(rasp, homepath, remote_homefolder, remotepath)
 
     def upload_script(self, rasp, scriptname):
         homepath = join(self.parent.scriptdirpath, scriptname)
         remotepath = join("/home/pi/", scriptname)
         self.upload(rasp, homepath, remotepath)
 
-    def upload(self, rasp, homepath, remotepath):
+    def upload_video(self, rasp, videoname):
+        homepath = join(self.parent.videodirpath, videoname)
+        remote_folders = self.parent.targetvidopath
+        remotepath = join(remote_folders, videoname)
+        self.upload(rasp, homepath, remote_folders, remotepath)
+
+    def upload(self, rasp, homepath, remote_folders, remotepath):
         ssh = self.connect_to(rasp.IP)
         ftp_client = ssh.open_sftp()
+        self.send_command([f'mkdir -p {remote_folders}'], [ssh])
+        print('mkdir done')
         ftp_client.put(homepath, remotepath)  # get is downloading
+        print('upload done')
         ftp_client.close()
+        print('ftp client closed')
 
         #self.send_command(comands, sshs)
